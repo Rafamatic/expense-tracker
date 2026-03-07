@@ -1,0 +1,145 @@
+.transaction-list h2 {
+    margin: 0 0 20px 0;
+    color: #333;
+    font-size: 1.5em;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+.empty-icon {
+    font-size: 4em;
+    margin-bottom: 15px;
+}
+
+.empty-state p {
+    margin: 10px 0 5px 0;
+    font-size: 1.2em;
+    color: #666;
+}
+
+.empty-state small {
+    color: #999;
+}
+
+.transactions-container {
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.transactions-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.transactions-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.transactions-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+}
+
+.transactions-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+.transaction-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    border-left: 4px solid;
+    background: #fafafa;
+    transition: all 0.3s ease;
+}
+
+.transaction-item.income {
+    border-left-color: #10b981;
+    background: linear-gradient(to right, #ecfdf5, #fafafa);
+}
+
+.transaction-item.expense {
+    border-left-color: #ef4444;
+    background: linear-gradient(to right, #fef2f2, #fafafa);
+}
+
+.transaction-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.transaction-info {
+    flex: 1;
+}
+
+.transaction-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.transaction-category {
+    font-weight: 700;
+    color: #333;
+    font-size: 15px;
+}
+
+.transaction-date {
+    color: #888;
+    font-size: 13px;
+}
+
+.transaction-description {
+    color: #666;
+    font-size: 14px;
+}
+
+.transaction-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.transaction-amount {
+    font-size: 18px;
+    font-weight: 700;
+    min-width: 100px;
+    text-align: right;
+}
+
+.transaction-amount.income {
+    color: #10b981;
+}
+
+.transaction-amount.expense {
+    color: #ef4444;
+}
+
+.delete-btn {
+    background: #fee;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+
+.delete-btn:hover {
+    background: #fdd;
+    transform: scale(1.1);
+}
