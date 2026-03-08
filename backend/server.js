@@ -3,34 +3,31 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 
-// Load env vars
 dotenv.config();
 
 const app = express();
 
-// Connect to database
-connectDB();
+// Connect to database safely
+connectDB().catch(err => {
+    console.error('Database connection failed:', err.message);
+});
 
 // CORS
 app.use(cors({
-    origin: '*',
+    origin: ['http://localhost:3000', 'https://expense-tracker-chi-lyart.vercel.app'],
     credentials: true
 }));
 
-// Body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/transactions', require('./routes/transactions'));
 
-// Health check
 app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', message: 'Server is running' });
 });
 
-// Root route
 app.get('/', (req, res) => {
     res.json({
         message: 'ExpenseTracker API',
@@ -43,11 +40,9 @@ app.get('/', (req, res) => {
     });
 });
 
-// Error handling
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).json({ message: 'Something went wrong!' });
+    res.status(500).json({ message: err.message || 'Something went wrong!' });
 });
 
-// Export for Vercel
 module.exports = app;
