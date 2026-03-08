@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import TransactionForm from './TransactionForm';
 import TransactionList from './TransactionList';
 import Statistics from './Statistics';
@@ -22,12 +22,7 @@ function Dashboard({ user, onLogout }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    useEffect(() => {
-        fetchTransactions();
-        fetchStats();
-    }, [filters]);
-
-    const fetchTransactions = async () => {
+    const fetchTransactions = useCallback(async () => {
         try {
             setLoading(true);
             const response = await transactionAPI.getAll(filters);
@@ -39,16 +34,21 @@ function Dashboard({ user, onLogout }) {
         } finally {
             setLoading(false);
         }
-    };
+    }, [filters]);
 
-    const fetchStats = async () => {
+    const fetchStats = useCallback(async () => {
         try {
             const response = await transactionAPI.getStats();
             setStats(response.data);
         } catch (err) {
             console.error('Failed to fetch stats:', err);
         }
-    };
+    }, []);
+
+    useEffect(() => {
+        fetchTransactions();
+        fetchStats();
+    }, [fetchTransactions, fetchStats]);
 
     const handleAddTransaction = async (transaction) => {
         try {
