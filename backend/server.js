@@ -1,26 +1,82 @@
+// const express = require('express');
+// const cors = require('cors');
+// const dotenv = require('dotenv');
+// const connectDB = require('./config/db');
+
+// // Load env vars
+// dotenv.config();
+// // Connect to database (non-blocking)
+// connectDB().catch(err => {
+//     console.error('Database connection failed:', err.message);
+// });
+
+// const app = express();
+// // IMPORTANT: Update CORS for production
+// const allowedOrigins = [
+//     'http://localhost:3000',
+//     'https://your-frontend-app.vercel.app', // We'll update this later
+// ];
+
+// // Middleware
+// app.use(cors({
+//     origin: function (origin, callback) {
+//         if (!origin || allowedOrigins.includes(origin)) {
+//             callback(null, true);
+//         } else {
+//             callback(new Error('Not allowed by CORS'));
+//         }
+//     },
+//     credentials: true
+// }));
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: false }));
+
+// // Routes
+// app.use('/api/auth', require('./routes/auth'));
+// app.use('/api/transactions', require('./routes/transaction'));
+
+// // Health check
+// app.get('/api/health', (req, res) => {
+//     res.json({ status: 'OK', message: 'Server is running' });
+// });
+// app.get("/", (req, res) => {
+//     res.send("Expense Tracker backend is running");
+// });
+// // Error handling middleware
+// app.use((err, req, res, next) => {
+//     console.error(err.stack);
+//     res.status(500).json({ message: 'Something went wrong!' });
+// });
+
+// module.exports = app;
+
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 
-// Load env vars
+// Load environment variables
 dotenv.config();
-// Connect to database (non-blocking)
-connectDB().catch(err => {
-    console.error('Database connection failed:', err.message);
-});
+
+// Connect to database
+connectDB();
 
 const app = express();
-// IMPORTANT: Update CORS for production
-const allowedOrigins = [
-    'http://localhost:3000',
-    'https://your-frontend-app.vercel.app', // We'll update this later
-];
 
-// Middleware
+// ============================================
+// CORS Configuration - IMPORTANT!
+// ============================================
+const allowedOrigins = [
+    'http://localhost:3000',           // Local development
+    process.env.FRONTEND_URL,          // Production frontend
+].filter(Boolean); // Remove undefined values
+
 app.use(cors({
     origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
+        // Allow requests with no origin (mobile apps, Postman, etc.)
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.indexOf(origin) !== -1) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
@@ -28,24 +84,28 @@ app.use(cors({
     },
     credentials: true
 }));
+
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
-app.use('/api/transactions', require('./routes/transaction'));
+app.use('/api/transactions', require('./routes/transactions'));
 
 // Health check
 app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', message: 'Server is running' });
 });
-app.get("/", (req, res) => {
-    res.send("Expense Tracker backend is running");
-});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ message: 'Something went wrong!' });
 });
 
-module.exports = app;
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
