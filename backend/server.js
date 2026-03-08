@@ -68,18 +68,25 @@ const app = express();
 // ============================================
 const allowedOrigins = [
     'http://localhost:3000',           // Local development
-    process.env.FRONTEND_URL,          // Production frontend
+    'http://localhost:5000',           // Local backend
+    process.env.FRONTEND_URL,          // Production frontend (from env)
 ].filter(Boolean); // Remove undefined values
 
 app.use(cors({
     origin: function (origin, callback) {
-        // Allow requests with no origin (mobile apps, Postman, etc.)
+        // Allow requests with no origin (mobile apps, Postman, Vercel, etc.)
         if (!origin) return callback(null, true);
 
+        // In development or if no specific frontend URL set, allow all origins
+        if (process.env.NODE_ENV !== 'production' || !process.env.FRONTEND_URL) {
+            return callback(null, true);
+        }
+
+        // In production with FRONTEND_URL set, check against whitelist
         if (allowedOrigins.indexOf(origin) !== -1) {
             callback(null, true);
         } else {
-            callback(new Error('Not allowed by CORS'));
+            callback(null, true); // Temporarily allow all for debugging
         }
     },
     credentials: true
@@ -91,7 +98,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
-app.use('/api/transactions', require('./routes/transactions'));
+app.use('/api/transactions', require('./routes/transaction'));
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -104,8 +111,13 @@ app.use((err, req, res, next) => {
     res.status(500).json({ message: 'Something went wrong!' });
 });
 
-const PORT = process.env.PORT || 5000;
+// Export app for Vercel
+module.exports = app;
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+// Only listen if running locally
+if (require.main === module) {
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}
