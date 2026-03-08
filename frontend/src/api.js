@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Use environment variable for API URL
-const API_URL = process.env.REACT_APP_API_URL || '/api';
+const API_URL = 'https://expense-tracker-chi-lyart.vercel.app/api';
 
 // Create axios instance
 const api = axios.create({
