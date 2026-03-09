@@ -13,10 +13,31 @@ connectDB().catch(err => {
 });
 
 // CORS
-app.use(cors({
-    origin: ['http://localhost:3000', 'https://expense-tracker-chi-lyart.vercel.app'],
-    credentials: true
-}));
+// app.use(cors({
+//     origin: ['http://localhost:3000', 'https://expense-tracker-chi-lyart.vercel.app'],
+//     credentials: true
+// }));
+
+const allowedOrigins = [
+    'http://localhost:3000',
+    'https://expense-tracker-frontend-ten-pi.vercel.app'
+];
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error(`CORS blocked for origin: ${origin}`));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
